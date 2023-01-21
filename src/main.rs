@@ -100,7 +100,22 @@ impl SoundStream for MidiMusicStream {
     }
 }
 
+fn print_usage() {
+    eprintln!("Usage: rustysynth-test <soundfont> <midi-file>");
+}
+
 fn main() {
+    let mut args = std::env::args_os().skip(1);
+    let Some(soundfont_arg) = args.next() else {
+        eprintln!("Missing soundfont.");
+        print_usage();
+        return;
+    };
+    let Some(midi_arg) = args.next() else {
+        eprintln!("Missing path to midi file.");
+        print_usage();
+        return;
+    };
     let mut window = RenderWindow::new(
         (1024, 768),
         "MIDI Music Playback",
@@ -111,11 +126,11 @@ fn main() {
     window.set_framerate_limit(60);
 
     // Load the SoundFont.
-    let mut sf2 = File::open("TimGM6mb.sf2").unwrap();
+    let mut sf2 = File::open(soundfont_arg).unwrap();
     let sound_font = Rc::new(SoundFont::new(&mut sf2).unwrap());
 
     // Load the MIDI file.
-    let mut mid = File::open("flourish.mid").unwrap();
+    let mut mid = File::open(midi_arg).unwrap();
     let midi_file = Rc::new(MidiFile::new(&mut mid).unwrap());
 
     // Create the MIDI file sequencer.
