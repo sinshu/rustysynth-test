@@ -16,7 +16,7 @@ use sfml::system::Vector2;
 use sfml::window::Event;
 use sfml::window::Style;
 use std::fs::File;
-use std::rc::Rc;
+use std::sync::Arc;
 use std::sync::Mutex;
 
 const WAVEFORM_LENGTH: usize = 1024;
@@ -26,7 +26,7 @@ struct MidiMusicStream {
     left: Vec<f32>,
     right: Vec<f32>,
     batch: Vec<i16>,
-    mutex: Rc<Mutex<Vec<f32>>>,
+    mutex: Arc<Mutex<Vec<f32>>>,
 }
 
 impl MidiMusicStream {
@@ -34,7 +34,7 @@ impl MidiMusicStream {
     const SAMPLE_MIN: i32 = i16::MIN as i32;
     const SAMPLE_MAX: i32 = i16::MAX as i32;
 
-    fn new(sequencer: MidiFileSequencer, mutex: Rc<Mutex<Vec<f32>>>) -> Self {
+    fn new(sequencer: MidiFileSequencer, mutex: Arc<Mutex<Vec<f32>>>) -> Self {
         let batch_length = (MidiMusicStream::SAMPLE_RATE / 20) as usize;
 
         Self {
@@ -127,11 +127,11 @@ fn main() {
 
     // Load the SoundFont.
     let mut sf2 = File::open(soundfont_arg).unwrap();
-    let sound_font = Rc::new(SoundFont::new(&mut sf2).unwrap());
+    let sound_font = Arc::new(SoundFont::new(&mut sf2).unwrap());
 
     // Load the MIDI file.
     let mut mid = File::open(midi_arg).unwrap();
-    let midi_file = Rc::new(MidiFile::new(&mut mid).unwrap());
+    let midi_file = Arc::new(MidiFile::new(&mut mid).unwrap());
 
     // Create the MIDI file sequencer.
     let settings = SynthesizerSettings::new(44100);
@@ -142,7 +142,7 @@ fn main() {
     sequencer.play(&midi_file, false);
 
     let wav = vec![0_f32; WAVEFORM_LENGTH];
-    let mutex = Rc::new(Mutex::new(wav));
+    let mutex = Arc::new(Mutex::new(wav));
     let mutex2 = mutex.clone();
 
     // Start the sound stream.
