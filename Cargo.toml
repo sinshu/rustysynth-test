@@ -6,5 +6,5 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rustysynth = "0.9.2"
+rustysynth = "1.0.0"
 sfml = "0.19.0"
