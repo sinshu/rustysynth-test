@@ -48,7 +48,7 @@ impl MidiMusicStream {
 }
 
 impl SoundStream for MidiMusicStream {
-    fn get_data(&mut self) -> (&mut [i16], bool) {
+    fn get_data(&mut self) -> (&[i16], bool) {
         self.sequencer
             .render(&mut self.left[..], &mut self.right[..]);
 
@@ -86,7 +86,7 @@ impl SoundStream for MidiMusicStream {
             a[i] = self.left[j] + self.right[j];
         }
 
-        (&mut self.batch[..], true)
+        (&self.batch[..], true)
     }
 
     fn seek(&mut self, _offset: Time) {}
@@ -121,7 +121,8 @@ fn main() {
         "MIDI Music Playback",
         Style::TITLEBAR | Style::CLOSE,
         &Default::default(),
-    );
+    )
+    .expect("Failed to create the render window.");
 
     window.set_framerate_limit(60);
 
